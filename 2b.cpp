@@ -26,6 +26,25 @@ typedef pair<ll,ll> pll;
 const ll MOD = (ll)(1e9)+7ll;
 const ll INF = (1ll << 60);
 
+bool valid(vector<int> a) {
+  bool ok = true;  
+  bool inc = true;
+  bool dec = true;
+  for (int i = 0; i < (int) a.size() - 1; i++ ) {
+    int diff = a[i+1] - a[i];
+    if (diff > 0) {
+      dec = false;
+    } else if (diff < 0) {
+      inc = false;
+    }
+    if (!(abs(diff) >= 1 && abs(diff) <= 3)) {
+      ok = false;
+      break;
+    }
+  }
+  return ok && (inc || dec);
+}
+
 int main() {
   ios_base::sync_with_stdio(false);
   cin.tie(0);
@@ -45,28 +64,34 @@ int main() {
   }
   int cnt = 0;
   for (int i = 0; i < n; i++) {
-    for (int k = 0; k < (int) a[i].size(); k++) {
-      bool ok = true;  
-      vector<vector<int>> b = a;
-      b[i].erase(b[i].begin() + k);
-      bool inc = true;
-      bool dec = true;
-      for (int j = 0; j < (int) b[i].size() - 1; j++) {
-        int diff = b[i][j+1] - b[i][j];
-        if (diff > 0) {
-          dec = false;
-        }
-        if (diff < 0) {
-          inc = false;
-        }
-        if (!(abs(diff) >= 1 && abs(diff) <= 3)) {
-          ok = false;
-        }
+    bool ok = false;
+    auto consider = [&](int x) {
+      vector<int> b = a[i];
+      b.erase(b.begin() + x);
+      if (valid(b)) {
+        ok = true;
       }
-      if (ok && (inc || dec)) {
-        cnt++;
+    };
+    consider(0);
+    for (int j = 0; j < (int) a[i].size() - 1; j++) {
+      int diff = a[i][j+1] - a[i][j];
+      if (abs(diff) < 1 || abs(diff) > 3) {
+        consider(j);
+        consider(j+1);
         break;
       }
+      if (j + 2 < (int) a[i].size()) {
+        int diff2 = a[i][j+2] - a[i][j+1];
+        if ((diff > 0) != (diff2 > 0)) {
+          consider(j);
+          consider(j+1);
+          consider(j+2);
+          break;
+        }
+      }
+    }
+    if (ok) {
+      cnt++;
     }
   }
   cout << cnt << "\n";
