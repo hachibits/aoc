@@ -43,9 +43,16 @@ int main() {
     return x;
   };
   int k = (int) s.size();
+  bool enable = true;
   int ans = 0;
-  for (int i = 0; i < k; i++) {
-    if (s[i] == 'm') {
+  for (int i = 0; i < k - 7; i++) {
+    if (s.substr(i, 4) == "do()") {
+      enable = true;
+    }
+    if (s.substr(i, 7) == "don\'t()") {
+      enable = false;
+    }
+    if (enable && s[i] == 'm') {
       if (i + 3 < k && s.substr(i + 1, 3) == "ul(") {
         i += 4;
         int x = Num(i);
